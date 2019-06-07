@@ -1,5 +1,5 @@
 # @appt/sequelize
-This is a plugin made for Appt that wraps [Mongoose ODM](https://www.npmjs.com/package/mongoose) to work into the *Appt's ecosystem* with advanced *database models and schemes*. 
+This is a plugin made for Appt that wraps [Sequelize ORM](https://www.npmjs.com/package/sequelize) to work into the *Appt's ecosystem* with advanced *database models and schemes*. 
 
 We assume you got here after seeing the [Appt's Core](https://www.npmjs.com/package/@appt/core) session of main concepts. If you don't, **we strongly recommend** you to step back an take a 5 minutes reading to get used with some key concepts we're going to apply here.
 
@@ -9,44 +9,41 @@ We assume you got here after seeing the [Appt's Core](https://www.npmjs.com/pack
 
  
 ## Resources
-The `@appt/mongoose` plugin export some resources which can be imported as seen below:
+The `@appt/sequelize` plugin export some resources which can be imported as seen below:
 ```javascript
 import {
-   Mongoose,   
-   MongooseParse,
+   Sequelize,
+   sequelize,
    TModel,
    TSchema,
-   SchemaTypes,
    SchemaProperties
-} from '@appt/mongoose';
+} from '@appt/sequelize';
 ```
 
-### Mongoose
-At the example below, we have a component that needs to act as a database connector of an application. By default, an Appt component is just a class with a "signature" that it can be injected by other class. As our component here needs to a specific behavior, we need to make use of a *Special-Type Extender* called *TDatabase*. This special type makes part of the [@appt/core](https://www.npmjs.com/package/@appt/core#apptcore) package and it indicates our component should act as a database connector, but it does not know *how or which kind of database to connect*. That's why we need to use a *"driver"*, which here is *"Mongoose"*. At this point, you only need to provide the `uri` connection and, if you need a little more configuration, pass into options attribute any param allowed by the mongoose connection.
+### Sequelize
+AR the example below, we have a component that needs to act as a database connector of an application. By default, an Appt component is just a class with a "signature" that it can be injected by other class. As our component here needs to a specific behavior, we need to make use of a *Special-Type Extender* called *TDatabase*. This special type makes part of the [@appt/core](https://www.npmjs.com/package/@appt/core#apptcore) package and it indicates our component should act as a database connector, but it does not know *how or which kind of database to connect*. That's why we need to use a *"driver"*, which here is *"Sequelize"*R At this point, you only need to provide the `uri` connection and, if you need a little more configuration, pass into options attribute any param allowed by the sequelize connection.
 ```javascript
 import { Component, TDatabase } from '@appt/core';
-import { Mongoose } from '@appt/mongoose';
+import { Sequelize } from '@appt/sequelize';
 
 const config = {
-	uri: 'mongodb://localhost:27017/appt-demo',
-	options: {
-		debug:  true,
-		useNewUrlParser:  true,
-		keepAlive: true
-	}
+  uri: `postgres://localhost:5432/sqlz`,
+  options: {
+    logging: true
+  }
 }
 
 @Component({
-	extend: TDatabase(Mongoose, config.uri, config.options)
+	extend: TDatabase(Sequelize, Ronfig.uri, config.options)
 })
 export class AppDatabase{}
 ```
 
 ### TModel
-This Special-Type Extender add the Mongoose Model behavior to our component. That means once imported by another component (or even inside the model), any *mongoose/mongo* query method can be accessed into the class context. After define the type as a TModel component, the mongoose model expect to has a `mongoose schema` as first param. You also can add any configuration allowed for a mongoose models by passing them as second param.
+This Special-Type Extender add the Sequelize model behavior to our component. That means once imported by another component (or even inside the model), any *sequelize* query method can be accessed into the class context. After define the type as a TModel component, the sequelize model expect to has a `sequelize schema` as first param. You also can add any configuration allowed for a sequelize models by passing them as second param.
 ```javascript
 import { Component } from '@appt/core';
-import { TModel } from '@appt/mongoose';
+import { TModel } from '@appt/sequelize';
 
 @Component({
 	extend: TModel('AppShema')
@@ -57,109 +54,36 @@ export class MyModel {
 	}
 
 	static getById(_id){
-		return this.findOne({ _id: _id });
+		return this.findOne({ _id });
 	}
 }
 ```
 
 ### TSchema
-The special type to transform a component into a `Mongoose Schema`. All the configurations accepted by mongoose can be passed through it (`TSchema(config)`).
+The special type to transform a component into a `Sequelize Schema`. All the configurations accepted by sequelize can be passed through it (`TSchema(config)`).
 ```javascript
 import { Component } from '@appt/core';
-import { TSchema } from '@appt/mongoose';
+import { TSchema } from '@appt/sequelize';
 
 @Component({
 	extend: TSchema
 })
 export class AppShema {
 	constructor(){
-		this.name = {
-			type: String,
-			trim: true,
-			default: "",
-		}
+		this.name = {}
 
-		this.email = {
-			type: String,
-			trim: true,
-			default: "",
-		}
+		this.email = {}
 	}
 }
 ```
 
 ### SchemaTypes
-This is an Appt interface for Mongoose ODM schema types. It exposes every type available in Mongoose.
+This is an Appt interface for Sequelize ORM schema types. It exposes every type available in Sequelize.
 ```javascript
-import { SchemaTypes } from '@appt/mongoose';
+import { SchemaTypes } from '@appt/sequelize';
 ...
-	this._id = {
-		type: SchemaTypes.ObjectId,
-		require: true
-	}
+	this._id = {}
 ...
-```
-
-### MongooseParse
-Another Appt interface, but in this case, for Mongoose ODM type parsers. It exposes every parser available by Mongoose.
-
-```javascript
-import { MongooseParse } from '@appt/mongoose';
-...
-	getById(myId){
-		return this.findOne({
-			_id: MongooseParse.ObjectId(myId)
-		})
-	}
-...
-```
-
-### SchemaProperties
-Remember the `TSchema` example above? The implementations of mongoose schemas can has a lot more straightfoward approach using this helper. Let's see it:
-```javascript
-import { Component } from '@appt/core';
-import { TSchema, SchemaProperties } from '@appt/mongoose';
-
-@Component({
-	extend: TSchema,
-	inject: SchemaProperties
-})
-export class AppShema {
-	constructor({
-		asString,
-		asBoolean,
-		asObjectId,
-		asNumber,
-		asDate,
-		asEnum
-	})
-	{
-		// Defaults: trim: true, default: ""
-		// telephones is a array of strings
-		this.telephones = [ asString() ];
-		
-		// Defaults: default: 0
-		this.age = asNumber();
-
-		// Defaults: null
-		this.school = asObjectId();
-
-		// Defaults: default: false
-		this.active = asBoolean();
-
-		// Defaults: default: Date.now
-		this.created_at = asDate();
-
-		// Defaults: null
-		// Methods: ofStrings, ofNumbers, ofDates, ofBooleans, ofObjectIds
-		this.profile = asEnum({
-			default: 'student'
-		}).ofStrings([
-			'teacher', 
-			'student'
-		]);
-	}
-}
 ```
 
 ## Compatibility
