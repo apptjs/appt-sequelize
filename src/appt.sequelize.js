@@ -24,11 +24,8 @@ function TModel(main, options = null) {
 }
 
 class ApptModel {
-  private targetName;
-  private options;
-
   constructor(extenderParams, Target, injectables) {
-    return <any>this.exec(extenderParams, Target, injectables);
+    return this.exec(extenderParams, Target, injectables);
   }
 
   normalizeComponents(component) {
@@ -94,7 +91,7 @@ class ApptSchema {
       injectables: injectables
     });
 
-    return <any>this.exec(extenderParams, Target, injectables);
+    return this.exec(extenderParams, Target, injectables);
   }
 
   exec(extenderParams, Target, injectables) {
@@ -109,9 +106,6 @@ class ApptSchema {
 }
 
 class QueryInterfaceWrap {
-  private sequelize;
-  private schemaAttrs;
-  private schemaOptions;
 
   constructor(sequelize, schema, options) {
     this.sequelize = sequelize;
@@ -331,7 +325,6 @@ class QueryInterfaceWrap {
 }
 
 class ApptSequelize {
-  private customConfig;
 
   constructor(...options) {
     this.customConfig = options.filter(opt => opt != null && opt != undefined && opt != "undefined");

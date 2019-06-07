@@ -1,6 +1,6 @@
 {
   "name": "@appt/sequelize",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "This a wrap for Sequelize ORM to work into the Appt's ecosystem with advanced database models and schemes.",
   "main": "./dist/index.js",
   "bugs": {
@@ -10,12 +10,9 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com:apptjs/appt-sequelize.git"
+    "url": "git+https://github.com/apptjs/appt-sequelize.git"
   },
-  "author": {
-    "name": "Brab0",
-    "email": "brabo.rodrigo@gmail.com"
-  },
+  "author": "Brab0 <brabo.rodrigo@gmail.com>",
   "scripts": {
     "build": "rimraf dist/ && babel ./src --out-dir dist/ --copy-files",
     "prepublish": "npm run build",
