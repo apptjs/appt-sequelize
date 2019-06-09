@@ -194,9 +194,15 @@ class QueryInterfaceWrap {
   createTable(...args) {
     //tableName: string, attributes: Object, options: Object, model)
     const newArgs = this.formatArgsForTableName(args);
-    newArgs[1] = this.schemaAttrs;
+    newArgs.splice(1, 0, this.schemaAttrs);
 
     return this.sequelize.queryInterface.createTable(...args);
+  }
+
+  createTableAs(query) {
+    return this.sequelize.query(`
+      CREATE TABLE ${this.schemaOptions.tableName} AS ${query}
+    `);
   }
 
   createView(query) {

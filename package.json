@@ -1,6 +1,6 @@
 {
   "name": "@appt/sequelize",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "This a wrap for Sequelize ORM to work into the Appt's ecosystem with advanced database models and schemes.",
   "main": "./dist/index.js",
   "bugs": {
